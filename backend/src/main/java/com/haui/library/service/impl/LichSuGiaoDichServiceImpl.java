@@ -62,3 +62,4 @@ public class LichSuGiaoDichServiceImpl implements LichSuGiaoDichService {
         return lichSuGiaoDichRepository.deleteByNgayGDBefore(cutOff);
     }
 }
+

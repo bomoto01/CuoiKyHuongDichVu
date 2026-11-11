@@ -76,3 +76,4 @@ public class KhachHangServiceImpl implements KhachHangService {
         khachHangRepository.deleteById(maKH);
     }
 }
+

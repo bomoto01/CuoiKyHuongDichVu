@@ -13,3 +13,4 @@ public interface LichSuGiaoDichService {
     List<LichSuGiaoDichResponse> getByTrangThai(String trangThai);
     int deleteOlderThanThreeYears();
 }
+

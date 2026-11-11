@@ -50,3 +50,4 @@ public enum ErrorCode {
         this.statusCode = statusCode;
     }
 }
+

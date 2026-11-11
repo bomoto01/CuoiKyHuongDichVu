@@ -12,3 +12,4 @@ public interface SachRepository extends JpaRepository<Sach, String> {
     List<Sach> findByTenSachContainingIgnoreCase(String keyword);
     boolean existsByTheLoai_MaTheLoai(String maTheLoai);
 }
+

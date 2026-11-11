@@ -71,3 +71,4 @@ public class TheLoaiServiceImpl implements TheLoaiService {
         theLoaiRepository.deleteById(maTheLoai);
     }
 }
+

@@ -39,3 +39,4 @@ public class LichSuGiaoDich {
     @JoinColumn(name = "MaSach")
     private Sach sach;
 }
+

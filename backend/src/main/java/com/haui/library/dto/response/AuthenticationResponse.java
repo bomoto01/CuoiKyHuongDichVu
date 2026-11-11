@@ -11,3 +11,4 @@ public class AuthenticationResponse {
     private boolean authenticated;
     private TaiKhoanResponse user;
 }
+

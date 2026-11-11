@@ -19,3 +19,4 @@ public class TraSachRequest {
     @Min(value = 1, message = "Số lượng trả phải lớn hơn 0")
     private Integer soLuong;
 }
+

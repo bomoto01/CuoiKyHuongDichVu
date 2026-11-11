@@ -21,3 +21,4 @@ public interface LichSuGiaoDichRepository extends JpaRepository<LichSuGiaoDich, 
     @Query("DELETE FROM LichSuGiaoDich l WHERE l.ngayGD < :cutOffDate")
     int deleteByNgayGDBefore(@Param("cutOffDate") LocalDateTime cutOffDate);
 }
+

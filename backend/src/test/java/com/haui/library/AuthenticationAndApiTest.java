@@ -60,3 +60,4 @@ class AuthenticationAndApiTest {
                 .andExpect(jsonPath("$.code").value(1006));
     }
 }
+

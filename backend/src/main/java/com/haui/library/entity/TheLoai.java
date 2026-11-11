@@ -24,3 +24,4 @@ public class TheLoai {
     @OneToMany(mappedBy = "theLoai", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Sach> sachList;
 }
+

@@ -16,3 +16,4 @@ public class KhachHangRequest {
 
     private String sdtKH;
 }
+

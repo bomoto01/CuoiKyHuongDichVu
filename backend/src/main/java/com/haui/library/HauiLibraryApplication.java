@@ -10,3 +10,4 @@ public class HauiLibraryApplication {
         SpringApplication.run(HauiLibraryApplication.class, args);
     }
 }
+

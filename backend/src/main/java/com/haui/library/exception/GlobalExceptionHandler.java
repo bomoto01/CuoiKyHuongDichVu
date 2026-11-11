@@ -63,3 +63,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode()).body(apiResponse);
     }
 }
+

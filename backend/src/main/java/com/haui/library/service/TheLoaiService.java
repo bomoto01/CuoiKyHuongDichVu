@@ -13,3 +13,4 @@ public interface TheLoaiService {
     TheLoaiResponse update(TheLoaiRequest request);
     void delete(String maTheLoai);
 }
+

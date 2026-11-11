@@ -14,3 +14,4 @@ public class TheLoaiRequest {
     @NotBlank(message = "Tên thể loại không được để trống")
     private String tenTheLoai;
 }
+

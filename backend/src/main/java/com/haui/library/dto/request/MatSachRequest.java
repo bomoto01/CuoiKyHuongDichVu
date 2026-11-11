@@ -19,3 +19,4 @@ public class MatSachRequest {
     @Min(value = 1, message = "Số lượng mất phải lớn hơn 0")
     private Integer soLuongMat;
 }
+

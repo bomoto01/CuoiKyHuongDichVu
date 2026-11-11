@@ -35,3 +35,4 @@ public class TaiKhoan {
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LichSuGiaoDich> lichSuGiaoDichList;
 }
+

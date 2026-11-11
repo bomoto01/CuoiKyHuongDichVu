@@ -44,3 +44,4 @@ Dự án thuộc học phần **Phát triển phần mềm hướng dịch vụ 
 - **3.6 Quản lý Lịch Sử Giao Dịch:** `/api/LiSuGiaoDich/**`
 - **Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
 - **H2 Console:** `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:haui_library`, user: `sa`, pass: rỗng)
+

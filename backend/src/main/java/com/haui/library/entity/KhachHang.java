@@ -30,3 +30,4 @@ public class KhachHang {
     @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LichSuGiaoDich> lichSuGiaoDichList;
 }
+

@@ -14,3 +14,4 @@ public interface KhachHangService {
     KhachHangResponse update(KhachHangRequest request);
     void delete(String maKH);
 }
+

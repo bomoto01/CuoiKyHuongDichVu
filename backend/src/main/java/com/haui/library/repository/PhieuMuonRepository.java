@@ -16,3 +16,4 @@ public interface PhieuMuonRepository extends JpaRepository<PhieuMuon, String> {
     boolean existsByKhachHang_MaKH(String maKH);
     boolean existsBySach_MaSach(String maSach);
 }
+

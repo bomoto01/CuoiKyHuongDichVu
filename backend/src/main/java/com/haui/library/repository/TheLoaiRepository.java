@@ -11,3 +11,4 @@ public interface TheLoaiRepository extends JpaRepository<TheLoai, String> {
     List<TheLoai> findByTenTheLoaiContainingIgnoreCase(String tenTheLoai);
     boolean existsByMaTheLoai(String maTheLoai);
 }
+
