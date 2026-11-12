@@ -35,4 +35,3 @@ public class PhieuMuon {
     @Column(name = "SoLuong", nullable = false)
     private Integer soLuong;
 }
-

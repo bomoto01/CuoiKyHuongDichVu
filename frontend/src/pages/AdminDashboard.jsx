@@ -46,11 +46,21 @@ export const AdminDashboard = () => {
       <Navbar currentTab={currentTab} onSelectTab={setCurrentTab} tabs={tabs} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {currentTab === 'sach' && <TabQuanLySach showToast={showToast} user={user} />}
-        {currentTab === 'the-loai' && <TabQuanLyTheLoai showToast={showToast} />}
-        {currentTab === 'tai-khoan' && <TabQuanLyTaiKhoan showToast={showToast} />}
-        {currentTab === 'truy-van' && <TabLichSuGiaoDich showToast={showToast} />}
-        {currentTab === 'profile' && <TabThongTinAdmin user={user} logout={logout} />}
+        <div className={currentTab === 'sach' ? 'block' : 'hidden'}>
+          <TabQuanLySach showToast={showToast} user={user} />
+        </div>
+        <div className={currentTab === 'the-loai' ? 'block' : 'hidden'}>
+          <TabQuanLyTheLoai showToast={showToast} />
+        </div>
+        <div className={currentTab === 'tai-khoan' ? 'block' : 'hidden'}>
+          <TabQuanLyTaiKhoan showToast={showToast} />
+        </div>
+        <div className={currentTab === 'truy-van' ? 'block' : 'hidden'}>
+          <TabLichSuGiaoDich showToast={showToast} />
+        </div>
+        <div className={currentTab === 'profile' ? 'block' : 'hidden'}>
+          <TabThongTinAdmin user={user} logout={logout} />
+        </div>
       </main>
 
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />

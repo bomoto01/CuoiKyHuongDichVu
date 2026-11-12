@@ -12,13 +12,23 @@ import java.util.List;
 
 @Repository
 public interface LichSuGiaoDichRepository extends JpaRepository<LichSuGiaoDich, String> {
-    List<LichSuGiaoDich> findByTaiKhoan_Username(String username);
-    List<LichSuGiaoDich> findBySach_MaSach(String maSach);
-    List<LichSuGiaoDich> findByNgayGDBetween(LocalDateTime start, LocalDateTime end);
-    List<LichSuGiaoDich> findByTrangThai(String trangThai);
-    
+
+    @Query("SELECT l FROM LichSuGiaoDich l LEFT JOIN FETCH l.taiKhoan LEFT JOIN FETCH l.khachHang LEFT JOIN FETCH l.sach s LEFT JOIN FETCH s.theLoai ORDER BY l.ngayGD DESC")
+    List<LichSuGiaoDich> findAll();
+
+    @Query("SELECT l FROM LichSuGiaoDich l LEFT JOIN FETCH l.taiKhoan LEFT JOIN FETCH l.khachHang LEFT JOIN FETCH l.sach s LEFT JOIN FETCH s.theLoai WHERE l.taiKhoan.username = :username ORDER BY l.ngayGD DESC")
+    List<LichSuGiaoDich> findByTaiKhoan_Username(@Param("username") String username);
+
+    @Query("SELECT l FROM LichSuGiaoDich l LEFT JOIN FETCH l.taiKhoan LEFT JOIN FETCH l.khachHang LEFT JOIN FETCH l.sach s LEFT JOIN FETCH s.theLoai WHERE l.sach.maSach = :maSach ORDER BY l.ngayGD DESC")
+    List<LichSuGiaoDich> findBySach_MaSach(@Param("maSach") String maSach);
+
+    @Query("SELECT l FROM LichSuGiaoDich l LEFT JOIN FETCH l.taiKhoan LEFT JOIN FETCH l.khachHang LEFT JOIN FETCH l.sach s LEFT JOIN FETCH s.theLoai WHERE l.ngayGD BETWEEN :start AND :end ORDER BY l.ngayGD DESC")
+    List<LichSuGiaoDich> findByNgayGDBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT l FROM LichSuGiaoDich l LEFT JOIN FETCH l.taiKhoan LEFT JOIN FETCH l.khachHang LEFT JOIN FETCH l.sach s LEFT JOIN FETCH s.theLoai WHERE l.trangThai = :trangThai ORDER BY l.ngayGD DESC")
+    List<LichSuGiaoDich> findByTrangThai(@Param("trangThai") String trangThai);
+
     @Modifying
     @Query("DELETE FROM LichSuGiaoDich l WHERE l.ngayGD < :cutOffDate")
     int deleteByNgayGDBefore(@Param("cutOffDate") LocalDateTime cutOffDate);
 }
-

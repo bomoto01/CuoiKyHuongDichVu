@@ -43,7 +43,7 @@ public class SachServiceImpl implements SachService {
 
     @Override
     public SachResponse getById(String maSach) {
-        Sach sach = sachRepository.findById(maSach)
+        Sach sach = sachRepository.findByIdWithTheLoai(maSach)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         return sachMapper.toResponse(sach);
     }

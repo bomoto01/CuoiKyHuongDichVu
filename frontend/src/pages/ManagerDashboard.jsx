@@ -52,7 +52,7 @@ export const ManagerDashboard = () => {
       <Navbar currentTab={currentTab} onSelectTab={setCurrentTab} tabs={tabs} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {currentTab === 'tim-kiem' && (
+        <div className={currentTab === 'tim-kiem' ? 'block' : 'hidden'}>
           <TabTimKiem
             onSelectCustomer={(cust, nextTab) => {
               setSelectedCustomer(cust);
@@ -61,31 +61,37 @@ export const ManagerDashboard = () => {
             }}
             showToast={showToast}
           />
-        )}
+        </div>
 
-        {currentTab === 'muon-sach' && (
+        <div className={currentTab === 'muon-sach' ? 'block' : 'hidden'}>
           <TabMuonSach
             selectedCustomer={selectedCustomer}
             setSelectedCustomer={setSelectedCustomer}
             showToast={showToast}
             user={user}
           />
-        )}
+        </div>
 
-        {currentTab === 'tra-sach' && (
+        <div className={currentTab === 'tra-sach' ? 'block' : 'hidden'}>
           <TabTraSach
             selectedCustomer={selectedCustomer}
             setSelectedCustomer={setSelectedCustomer}
             showToast={showToast}
             user={user}
           />
-        )}
+        </div>
 
-        {currentTab === 'truy-van' && <TabTruyVanDonMuon showToast={showToast} />}
+        <div className={currentTab === 'truy-van' ? 'block' : 'hidden'}>
+          <TabTruyVanDonMuon showToast={showToast} />
+        </div>
 
-        {currentTab === 'ban-doc' && <TabQuanLyBanDoc showToast={showToast} />}
+        <div className={currentTab === 'ban-doc' ? 'block' : 'hidden'}>
+          <TabQuanLyBanDoc showToast={showToast} />
+        </div>
 
-        {currentTab === 'tai-khoan' && <TabThongTinTaiKhoan user={user} logout={logout} />}
+        <div className={currentTab === 'tai-khoan' ? 'block' : 'hidden'}>
+          <TabThongTinTaiKhoan user={user} logout={logout} />
+        </div>
       </main>
 
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />

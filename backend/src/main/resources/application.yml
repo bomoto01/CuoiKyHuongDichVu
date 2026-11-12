@@ -1,5 +1,9 @@
 server:
   port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/xml,text/plain
+    min-response-size: 512
 
 spring:
   application:
@@ -38,17 +42,23 @@ spring:
     activate:
       on-profile: supabase
   datasource:
-    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require}
+    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true}
     driver-class-name: org.postgresql.Driver
     username: ${SUPABASE_DB_USERNAME:postgres.yphylldavdpxisddudbr}
     password: ${SUPABASE_DB_PASSWORD:${DB_PASSWORD:}}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      max-lifetime: 600000
+      connection-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
 ---
 # Cau hinh su dung SQL Server neu muon ket noi SQL Server that
