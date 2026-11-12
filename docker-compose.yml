@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: haui-library-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - SPRING_PROFILES_ACTIVE=supabase
+      - SUPABASE_DB_URL=jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
+      - SUPABASE_DB_USERNAME=postgres.yphylldavdpxisddudbr
+      - SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD:-monnayphaiduocA}
+      - DB_PASSWORD=${DB_PASSWORD:-monnayphaiduocA}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: haui-library-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

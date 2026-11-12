@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: haui-library-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: singapore
+    healthCheckPath: /api/Sach
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: supabase
+      - key: SUPABASE_DB_URL
+        value: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
+      - key: SUPABASE_DB_USERNAME
+        value: postgres.yphylldavdpxisddudbr
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
