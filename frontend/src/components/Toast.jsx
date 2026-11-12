@@ -30,3 +30,4 @@ export const Toast = ({ message, type = 'success', onClose }) => {
     </div>
   );
 };
+

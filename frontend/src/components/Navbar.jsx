@@ -85,3 +85,4 @@ export const Navbar = ({ currentTab, onSelectTab, tabs = [] }) => {
     </header>
   );
 };
+

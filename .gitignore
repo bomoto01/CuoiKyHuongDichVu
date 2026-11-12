@@ -18,7 +18,14 @@ frontend/build/
 frontend/.next/
 *.log
 
+# Environment variables
+.env
+*.env
+.env.*
+!.env.example
+
 # OS
 .DS_Store
 Thumbs.db
+
 
