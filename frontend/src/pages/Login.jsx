@@ -161,7 +161,7 @@ export const Login = () => {
         </div>
 
         <p className="text-center text-xs text-slate-500 mt-6">
-          Học phần: Phát triển phần mềm hướng dịch vụ (SOA) - Nhóm 9 - HaUI
+          Học phần: Phát triển phần mềm hướng dịch vụ (SOA) - Nhóm 18 - HaUI
         </p>
       </div>
     </div>
