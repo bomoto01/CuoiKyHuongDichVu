@@ -84,11 +84,17 @@ const TabQuanLySach = ({ showToast, user }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [bkList, catList] = await Promise.all([bookApi.getAll(), categoryApi.getAll()]);
-      setBooks(bkList || []);
-      setCategories(catList || []);
-    } catch (err) {
-      showToast(err.message, 'error');
+      const [bkList, catList] = await Promise.allSettled([bookApi.getAll(), categoryApi.getAll()]);
+      if (bkList.status === 'fulfilled') {
+        setBooks(bkList.value || []);
+      } else {
+        showToast('Lỗi tải danh sách sách: ' + (bkList.reason?.message || 'Không thể lấy dữ liệu'), 'error');
+      }
+      if (catList.status === 'fulfilled') {
+        setCategories(catList.value || []);
+      } else {
+        showToast('Lỗi tải thể loại: ' + (catList.reason?.message || 'Không thể lấy dữ liệu'), 'error');
+      }
     } finally {
       setLoading(false);
     }

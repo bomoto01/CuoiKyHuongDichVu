@@ -27,15 +27,15 @@ public class LichSuGiaoDich {
     @Column(name = "TrangThai", length = 50)
     private String trangThai;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "Username")
     private TaiKhoan taiKhoan;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MaKH")
     private KhachHang khachHang;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MaSach")
     private Sach sach;
 }

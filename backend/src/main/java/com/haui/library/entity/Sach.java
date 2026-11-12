@@ -27,7 +27,7 @@ public class Sach {
     @Column(name = "SoLuong")
     private Integer soLuong;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MaTheLoai")
     private TheLoai theLoai;
 

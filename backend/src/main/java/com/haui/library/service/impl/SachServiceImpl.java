@@ -26,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SachServiceImpl implements SachService {
 
     private final SachRepository sachRepository;
