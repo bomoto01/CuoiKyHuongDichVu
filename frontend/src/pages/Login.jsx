@@ -135,13 +135,13 @@ export const Login = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => handleQuickLogin('hoannhunguyen', '123456')}
+                onClick={() => handleQuickLogin('phamquoctoan', '123456')}
                 className="flex items-center gap-2 p-2.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/70 text-blue-900 text-xs font-semibold transition text-left"
               >
                 <UserCheck className="w-4 h-4 text-blue-600 shrink-0" />
                 <div>
                   <p className="font-bold">Thủ Thư (Manager)</p>
-                  <p className="text-[11px] text-blue-700 font-normal">hoannhunguyen</p>
+                  <p className="text-[11px] text-blue-700 font-normal">phamquoctoan</p>
                 </div>
               </button>
 

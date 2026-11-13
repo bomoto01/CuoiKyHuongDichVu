@@ -33,7 +33,7 @@ public class ApplicationInitConfig {
             log.info("Starting initial database seeding for HaUI Library Management System...");
 
             // 1. Seed Accounts
-            if (taiKhoanRepository.count() == 0) {
+            if (!taiKhoanRepository.existsById("admin")) {
                 TaiKhoan admin = TaiKhoan.builder()
                         .username("admin")
                         .pass(passwordEncoder.encode("123456"))
@@ -41,18 +41,34 @@ public class ApplicationInitConfig {
                         .sdtTK("0347162755")
                         .role(Role.ADMIN)
                         .build();
+                taiKhoanRepository.save(admin);
+                log.info("Default admin account created: admin/123456");
+            }
 
+            if (!taiKhoanRepository.existsById("phamquoctoan")) {
                 TaiKhoan manager = TaiKhoan.builder()
-                        .username("hoannhunguyen")
+                        .username("phamquoctoan")
                         .pass(passwordEncoder.encode("123456"))
-                        .tenTK("Nguyễn Như Hoàn (Thủ Thư)")
+                        .tenTK("Phạm Quốc Toản (Thủ Thư)")
                         .sdtTK("0347162755")
                         .role(Role.MANAGER)
                         .build();
-
-                taiKhoanRepository.save(admin);
                 taiKhoanRepository.save(manager);
-                log.info("Default accounts created: admin/123456, hoannhunguyen/123456");
+                log.info("Default manager account created: phamquoctoan/123456");
+            }
+
+            // Đồng bộ dữ liệu: xóa tài khoản cũ hoannhunguyen nếu còn tồn tại
+            if (taiKhoanRepository.existsById("hoannhunguyen")) {
+                TaiKhoan toan = taiKhoanRepository.findById("phamquoctoan").orElse(null);
+                if (toan != null) {
+                    var txList = lichSuGiaoDichRepository.findByTaiKhoan_Username("hoannhunguyen");
+                    for (var tx : txList) {
+                        tx.setTaiKhoan(toan);
+                        lichSuGiaoDichRepository.save(tx);
+                    }
+                }
+                taiKhoanRepository.deleteById("hoannhunguyen");
+                log.info("Old account hoannhunguyen removed and transactions migrated to phamquoctoan.");
             }
 
             // 2. Seed Categories
@@ -105,7 +121,7 @@ public class ApplicationInitConfig {
                 KhachHang kh1 = khachHangRepository.findById("KH125583").orElse(null);
                 Sach s1 = sachRepository.findById("S001").orElse(null);
                 Sach s3 = sachRepository.findById("S003").orElse(null);
-                TaiKhoan manager = taiKhoanRepository.findById("hoannhunguyen").orElse(null);
+                TaiKhoan manager = taiKhoanRepository.findById("phamquoctoan").orElse(null);
 
                 if (kh2 != null && s1 != null) {
                     PhieuMuon pm1 = PhieuMuon.builder()
