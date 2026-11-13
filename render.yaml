@@ -2,8 +2,6 @@ services:
   - type: web
     name: haui-library-backend
     runtime: docker
-    dockerfilePath: backend/Dockerfile
-    dockerContext: backend
     dockerfilePath: Dockerfile
     dockerContext: .
     plan: free

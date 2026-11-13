@@ -4,14 +4,11 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /workspace
 
-# Pre-fetch dependencies for caching
-COPY pom.xml .
-# Copy backend pom and source code
+# Copy backend pom and source code from repository root
 COPY backend/pom.xml ./pom.xml
 RUN mvn dependency:go-offline -B || true
 
 # Compile and package Spring Boot application
-COPY src ./src
 COPY backend/src ./src
 RUN mvn clean package -DskipTests
 

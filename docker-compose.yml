@@ -1,7 +1,6 @@
 services:
   backend:
     build:
-      context: ./backend
       context: .
       dockerfile: Dockerfile
     container_name: haui-library-backend
