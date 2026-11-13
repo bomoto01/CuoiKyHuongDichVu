@@ -32,6 +32,20 @@ export const ManagerDashboard = () => {
 
   // Shared state: Currently selected customer for borrow/return operations
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  // Version signal to synchronize customer updates across tabs
+  const [customerVersion, setCustomerVersion] = useState(0);
+
+  const handleCustomerUpdated = (updatedCust, actionType = 'update') => {
+    setCustomerVersion((v) => v + 1);
+    setSelectedCustomer((prev) => {
+      if (!prev || !updatedCust) return prev;
+      if (prev.maKH === updatedCust.maKH) {
+        if (actionType === 'delete') return null;
+        return { ...prev, ...updatedCust };
+      }
+      return prev;
+    });
+  };
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -54,6 +68,8 @@ export const ManagerDashboard = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <div className={currentTab === 'tim-kiem' ? 'block' : 'hidden'}>
           <TabTimKiem
+            isActive={currentTab === 'tim-kiem'}
+            customerVersion={customerVersion}
             onSelectCustomer={(cust, nextTab) => {
               setSelectedCustomer(cust);
               setCurrentTab(nextTab || 'muon-sach');
@@ -65,6 +81,7 @@ export const ManagerDashboard = () => {
 
         <div className={currentTab === 'muon-sach' ? 'block' : 'hidden'}>
           <TabMuonSach
+            isActive={currentTab === 'muon-sach'}
             selectedCustomer={selectedCustomer}
             setSelectedCustomer={setSelectedCustomer}
             showToast={showToast}
@@ -74,6 +91,7 @@ export const ManagerDashboard = () => {
 
         <div className={currentTab === 'tra-sach' ? 'block' : 'hidden'}>
           <TabTraSach
+            isActive={currentTab === 'tra-sach'}
             selectedCustomer={selectedCustomer}
             setSelectedCustomer={setSelectedCustomer}
             showToast={showToast}
@@ -86,7 +104,10 @@ export const ManagerDashboard = () => {
         </div>
 
         <div className={currentTab === 'ban-doc' ? 'block' : 'hidden'}>
-          <TabQuanLyBanDoc showToast={showToast} />
+          <TabQuanLyBanDoc
+            showToast={showToast}
+            onCustomerUpdated={handleCustomerUpdated}
+          />
         </div>
 
         <div className={currentTab === 'tai-khoan' ? 'block' : 'hidden'}>
@@ -102,7 +123,7 @@ export const ManagerDashboard = () => {
 // ==========================================
 // 1. TAB TÌM KIẾM BẠN ĐỌC (Mục 2.2.5 & 3.7.2.1)
 // ==========================================
-const TabTimKiem = ({ onSelectCustomer, showToast }) => {
+const TabTimKiem = ({ isActive, customerVersion, onSelectCustomer, showToast }) => {
   const [searchType, setSearchType] = useState('ma'); // 'ma', 'ten', 'sdt'
   const [keyword, setKeyword] = useState('');
   const [customers, setCustomers] = useState([]);
@@ -114,17 +135,16 @@ const TabTimKiem = ({ onSelectCustomer, showToast }) => {
       setLoading(true);
       const data = await customerApi.getAll();
       setCustomers(data || []);
-      setSelectedRow(null);
+      setSelectedRow((prev) => {
+        if (!prev) return null;
+        return (data || []).find((c) => c.maKH === prev.maKH) || null;
+      });
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchAll();
-  }, []);
 
   const handleSearch = async () => {
     if (!keyword.trim()) {
@@ -147,6 +167,10 @@ const TabTimKiem = ({ onSelectCustomer, showToast }) => {
         results = await customerApi.searchBySDT(keyword.trim());
       }
       setCustomers(results || []);
+      setSelectedRow((prev) => {
+        if (!prev) return null;
+        return (results || []).find((c) => c.maKH === prev.maKH) || null;
+      });
       if (!results || results.length === 0) {
         showToast('Không tìm thấy bạn đọc phù hợp', 'info');
       }
@@ -156,6 +180,17 @@ const TabTimKiem = ({ onSelectCustomer, showToast }) => {
       setLoading(false);
     }
   };
+
+  // Re-fetch whenever a customer is added/updated/deleted or when the tab becomes active
+  useEffect(() => {
+    if (isActive) {
+      if (keyword.trim()) {
+        handleSearch();
+      } else {
+        fetchAll();
+      }
+    }
+  }, [customerVersion, isActive]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
@@ -1107,7 +1142,7 @@ const TabTruyVanDonMuon = ({ showToast }) => {
 // ==========================================
 // 5. TAB QUẢN LÝ BẠN ĐỌC (Mục 2.2.9 & 3.7.2.5)
 // ==========================================
-const TabQuanLyBanDoc = ({ showToast }) => {
+const TabQuanLyBanDoc = ({ showToast, onCustomerUpdated }) => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ maKH: '', tenKH: '', sdtKH: '' });
@@ -1147,12 +1182,15 @@ const TabQuanLyBanDoc = ({ showToast }) => {
     }
 
     try {
+      let savedCust = null;
       if (isEditing) {
-        await customerApi.update(formData);
+        savedCust = await customerApi.update(formData);
         showToast('Cập nhật thông tin bạn đọc thành công!');
+        onCustomerUpdated?.(savedCust || formData, 'update');
       } else {
-        await customerApi.add(formData);
+        savedCust = await customerApi.add(formData);
         showToast('Thêm bạn đọc mới thành công!');
+        onCustomerUpdated?.(savedCust || formData, 'add');
       }
       handleReset();
       fetchAll();
@@ -1171,6 +1209,7 @@ const TabQuanLyBanDoc = ({ showToast }) => {
     try {
       await customerApi.delete(formData.maKH);
       showToast('Xóa bạn đọc thành công!');
+      onCustomerUpdated?.({ maKH: formData.maKH }, 'delete');
       handleReset();
       fetchAll();
     } catch (err) {

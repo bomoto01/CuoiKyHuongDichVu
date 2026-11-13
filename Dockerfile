@@ -27,3 +27,4 @@ ENV SPRING_PROFILES_ACTIVE=supabase
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -jar app.jar"]
+

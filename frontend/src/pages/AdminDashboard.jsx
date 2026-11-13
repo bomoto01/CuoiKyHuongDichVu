@@ -27,6 +27,7 @@ export const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const [currentTab, setCurrentTab] = useState('sach');
   const [toast, setToast] = useState({ message: '', type: 'success' });
+  const [categoryVersion, setCategoryVersion] = useState(0);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -47,10 +48,18 @@ export const AdminDashboard = () => {
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <div className={currentTab === 'sach' ? 'block' : 'hidden'}>
-          <TabQuanLySach showToast={showToast} user={user} />
+          <TabQuanLySach
+            isActive={currentTab === 'sach'}
+            categoryVersion={categoryVersion}
+            showToast={showToast}
+            user={user}
+          />
         </div>
         <div className={currentTab === 'the-loai' ? 'block' : 'hidden'}>
-          <TabQuanLyTheLoai showToast={showToast} />
+          <TabQuanLyTheLoai
+            showToast={showToast}
+            onCategoryUpdated={() => setCategoryVersion((v) => v + 1)}
+          />
         </div>
         <div className={currentTab === 'tai-khoan' ? 'block' : 'hidden'}>
           <TabQuanLyTaiKhoan showToast={showToast} />
@@ -71,7 +80,7 @@ export const AdminDashboard = () => {
 // ==========================================
 // 1. TAB QUẢN LÝ SÁCH (Mục 2.2.1 & 3.7.3.1)
 // ==========================================
-const TabQuanLySach = ({ showToast, user }) => {
+const TabQuanLySach = ({ isActive, categoryVersion, showToast, user }) => {
   const [books, setBooks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,8 +120,10 @@ const TabQuanLySach = ({ showToast, user }) => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (isActive) {
+      loadData();
+    }
+  }, [categoryVersion, isActive]);
 
   const handleReset = () => {
     setFormData({ maSach: '', tenSach: '', tacGia: '', soLuong: 1, maTheLoai: '' });
@@ -480,7 +491,7 @@ const TabQuanLySach = ({ showToast, user }) => {
 // ==========================================
 // 2. TAB QUẢN LÝ THỂ LOẠI (Mục 2.2.2 & 3.7.3.2)
 // ==========================================
-const TabQuanLyTheLoai = ({ showToast }) => {
+const TabQuanLyTheLoai = ({ showToast, onCategoryUpdated }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -540,9 +551,11 @@ const TabQuanLyTheLoai = ({ showToast }) => {
       if (isEditing) {
         await categoryApi.update(formData);
         showToast('Cập nhật thể loại thành công!');
+        onCategoryUpdated?.();
       } else {
         await categoryApi.add(formData);
         showToast('Thêm thể loại mới thành công!');
+        onCategoryUpdated?.();
       }
       handleReset();
       fetchAll();
@@ -561,6 +574,7 @@ const TabQuanLyTheLoai = ({ showToast }) => {
     try {
       await categoryApi.delete(formData.maTheLoai);
       showToast('Xóa thể loại thành công!');
+      onCategoryUpdated?.();
       handleReset();
       fetchAll();
     } catch (err) {
