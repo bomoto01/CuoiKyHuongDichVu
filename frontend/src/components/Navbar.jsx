@@ -25,26 +25,14 @@ export const Navbar = ({ currentTab, onSelectTab, tabs = [] }) => {
           </div>
 
           {/* User Profile & Logout */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
               <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
-                {user?.tenTK ? user.tenTK.charAt(0).toUpperCase() : 'U'}
+                {user?.tenTK ? user.tenTK.charAt(0).toUpperCase() : (user?.username ? user.username.charAt(0).toUpperCase() : 'U')}
               </div>
-              <div className="text-left text-xs">
-                <p className="font-bold text-slate-800 line-clamp-1">{user?.tenTK || user?.username}</p>
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                      isAdmin
-                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                        : 'bg-blue-100 text-blue-800 border border-blue-200'
-                    }`}
-                  >
-                    {isAdmin ? 'Quản Trị Viên (Admin)' : 'Thủ Thư (Manager)'}
-                  </span>
-                  <span className="text-slate-400">@{user?.username}</span>
-                </div>
-              </div>
+              <span className="font-bold text-slate-800 text-sm max-w-[200px] truncate">
+                {user?.tenTK || user?.username}
+              </span>
             </div>
 
             <button
