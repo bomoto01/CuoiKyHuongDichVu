@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @RestController
@@ -19,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "3.6 Quản lý Lịch Sử Giao Dịch")
 public class LiSuGiaoDichController {
+
+    private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final LichSuGiaoDichService lichSuGiaoDichService;
 
@@ -51,7 +54,7 @@ public class LiSuGiaoDichController {
             @RequestParam(value = "NgayGDCuoi", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngayGDCuoi
     ) {
         LocalDateTime start = ngayGDDau != null ? ngayGDDau.atStartOfDay() : LocalDateTime.of(2000, 1, 1, 0, 0);
-        LocalDateTime end = ngayGDCuoi != null ? ngayGDCuoi.atTime(LocalTime.MAX) : LocalDateTime.now();
+        LocalDateTime end = ngayGDCuoi != null ? ngayGDCuoi.atTime(LocalTime.MAX) : LocalDateTime.now(VIETNAM_ZONE);
         return ApiResponse.success(lichSuGiaoDichService.getByNgayGD(start, end));
     }
 

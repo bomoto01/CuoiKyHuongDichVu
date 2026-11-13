@@ -425,11 +425,12 @@ const TabMuonSach = ({ selectedCustomer, setSelectedCustomer, showToast, user })
       showToast('Vui lòng chọn 1 cuốn sách từ kho sách', 'error');
       return;
     }
-    if (borrowQuantity <= 0) {
+    const qty = parseInt(borrowQuantity, 10);
+    if (!qty || qty <= 0) {
       showToast('Số lượng mượn phải lớn hơn 0', 'error');
       return;
     }
-    if (borrowQuantity > selectedBook.soLuong) {
+    if (qty > selectedBook.soLuong) {
       showToast(`Số lượng trong kho chỉ còn ${selectedBook.soLuong} cuốn, không đủ để mượn`, 'error');
       return;
     }
@@ -441,10 +442,10 @@ const TabMuonSach = ({ selectedCustomer, setSelectedCustomer, showToast, user })
         maMuon,
         maKH: customerCode.trim(),
         maSach: selectedBook.maSach,
-        soLuong: parseInt(borrowQuantity, 10),
+        soLuong: qty,
         ngayMuon: borrowDate ? `${borrowDate}T09:00:00` : null,
         ngayTra: returnDate ? `${returnDate}T17:00:00` : null,
-        username: user?.username || 'hoannhunguyen',
+        username: user?.username || 'phamquoctoan',
       };
 
       const res = await borrowApi.add(payload);
@@ -542,7 +543,22 @@ const TabMuonSach = ({ selectedCustomer, setSelectedCustomer, showToast, user })
                     min="1"
                     max={selectedBook.soLuong}
                     value={borrowQuantity}
-                    onChange={(e) => setBorrowQuantity(parseInt(e.target.value, 10) || 1)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        setBorrowQuantity('');
+                      } else {
+                        const parsed = parseInt(val, 10);
+                        setBorrowQuantity(isNaN(parsed) ? '' : parsed);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!borrowQuantity || borrowQuantity < 1) {
+                        setBorrowQuantity(1);
+                      } else if (borrowQuantity > selectedBook.soLuong) {
+                        setBorrowQuantity(selectedBook.soLuong);
+                      }
+                    }}
                     className="w-full px-3 py-2 bg-white rounded-lg border border-slate-300 text-sm font-bold"
                   />
                 </div>
@@ -724,7 +740,8 @@ const TabTraSach = ({ selectedCustomer, setSelectedCustomer, showToast, user }) 
       showToast('Vui lòng chọn 1 mục sách đang mượn', 'error');
       return;
     }
-    if (returnQuantity <= 0 || returnQuantity > selectedBorrow.soLuong) {
+    const qty = parseInt(returnQuantity, 10);
+    if (!qty || qty <= 0 || qty > selectedBorrow.soLuong) {
       showToast('Số lượng trả không hợp lệ', 'error');
       return;
     }
@@ -733,10 +750,10 @@ const TabTraSach = ({ selectedCustomer, setSelectedCustomer, showToast, user }) 
       setSubmitting(true);
       await borrowApi.traSach({
         maMuon: selectedBorrow.maMuon,
-        soLuong: parseInt(returnQuantity, 10),
-        username: user?.username || 'hoannhunguyen',
+        soLuong: qty,
+        username: user?.username || 'phamquoctoan',
       });
-      showToast(`Trả thành công ${returnQuantity} cuốn sách "${selectedBorrow.tenSach}"`, 'success');
+      showToast(`Trả thành công ${qty} cuốn sách "${selectedBorrow.tenSach}"`, 'success');
       fetchBorrowList(customerCode);
     } catch (err) {
       showToast(err.message, 'error');
@@ -750,9 +767,14 @@ const TabTraSach = ({ selectedCustomer, setSelectedCustomer, showToast, user }) 
       showToast('Vui lòng chọn 1 mục sách', 'error');
       return;
     }
+    const qty = parseInt(returnQuantity, 10);
+    if (!qty || qty <= 0 || qty > selectedBorrow.soLuong) {
+      showToast('Số lượng báo mất không hợp lệ', 'error');
+      return;
+    }
     if (
       !window.confirm(
-        `Xác nhận báo mất ${returnQuantity} cuốn sách "${selectedBorrow.tenSach}"? Thao tác này sẽ ghi nhận vào lịch sử giao dịch và không hoàn sách vào kho.`
+        `Xác nhận báo mất ${qty} cuốn sách "${selectedBorrow.tenSach}"? Thao tác này sẽ ghi nhận vào lịch sử giao dịch và không hoàn sách vào kho.`
       )
     ) {
       return;
@@ -762,10 +784,10 @@ const TabTraSach = ({ selectedCustomer, setSelectedCustomer, showToast, user }) 
       setSubmitting(true);
       await borrowApi.matSach({
         maMuon: selectedBorrow.maMuon,
-        soLuongMat: parseInt(returnQuantity, 10),
-        username: user?.username || 'hoannhunguyen',
+        soLuongMat: qty,
+        username: user?.username || 'phamquoctoan',
       });
-      showToast(`Đã ghi nhận báo mất ${returnQuantity} cuốn sách!`, 'info');
+      showToast(`Đã ghi nhận báo mất ${qty} cuốn sách!`, 'info');
       fetchBorrowList(customerCode);
     } catch (err) {
       showToast(err.message, 'error');
@@ -854,7 +876,22 @@ const TabTraSach = ({ selectedCustomer, setSelectedCustomer, showToast, user }) 
                   min="1"
                   max={selectedBorrow.soLuong}
                   value={returnQuantity}
-                  onChange={(e) => setReturnQuantity(parseInt(e.target.value, 10) || 1)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '') {
+                      setReturnQuantity('');
+                    } else {
+                      const parsed = parseInt(val, 10);
+                      setReturnQuantity(isNaN(parsed) ? '' : parsed);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (!returnQuantity || returnQuantity < 1) {
+                      setReturnQuantity(1);
+                    } else if (returnQuantity > selectedBorrow.soLuong) {
+                      setReturnQuantity(selectedBorrow.soLuong);
+                    }
+                  }}
                   className="w-full px-3 py-2 bg-white rounded-lg border border-slate-300 text-sm font-bold"
                 />
               </div>

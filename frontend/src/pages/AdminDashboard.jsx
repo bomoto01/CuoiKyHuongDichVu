@@ -294,7 +294,18 @@ const TabQuanLySach = ({ isActive, categoryVersion, showToast, user }) => {
             type="number"
             min="0"
             value={formData.soLuong}
-            onChange={(e) => setFormData({ ...formData, soLuong: parseInt(e.target.value, 10) || 0 })}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormData({
+                ...formData,
+                soLuong: val === '' ? '' : (parseInt(val, 10) || 0),
+              });
+            }}
+            onBlur={() => {
+              if (formData.soLuong === '' || isNaN(formData.soLuong) || formData.soLuong < 0) {
+                setFormData({ ...formData, soLuong: 0 });
+              }
+            }}
             className="w-full sm:w-48 px-3 py-2 bg-white rounded-lg border border-slate-300 text-sm font-bold"
           />
         </div>
@@ -466,9 +477,18 @@ const TabQuanLySach = ({ isActive, categoryVersion, showToast, user }) => {
                 min="1"
                 max={adjustModal.type === 'remove' ? adjustModal.book.soLuong : 9999}
                 value={adjustModal.qty}
-                onChange={(e) =>
-                  setAdjustModal({ ...adjustModal, qty: parseInt(e.target.value, 10) || 1 })
-                }
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAdjustModal({
+                    ...adjustModal,
+                    qty: val === '' ? '' : (parseInt(val, 10) || 1),
+                  });
+                }}
+                onBlur={() => {
+                  if (!adjustModal.qty || adjustModal.qty < 1) {
+                    setAdjustModal({ ...adjustModal, qty: 1 });
+                  }
+                }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-bold"
               />
             </div>
@@ -1035,6 +1055,23 @@ const TabLichSuGiaoDich = ({ showToast }) => {
   const [loading, setLoading] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
 
+  const formatTxDate = (val) => {
+    if (!val) return '—';
+    try {
+      const clean = val.replace('T', ' ');
+      const [datePart, timePart] = clean.split(' ');
+      if (datePart && timePart) {
+        const [y, m, d] = datePart.split('-');
+        if (y && m && d) {
+          return `${timePart.slice(0, 8)} ${d}/${m}/${y}`;
+        }
+      }
+      return clean;
+    } catch {
+      return val;
+    }
+  };
+
   // Filters
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -1178,7 +1215,7 @@ const TabLichSuGiaoDich = ({ showToast }) => {
               Mã: {selectedTx.maGD} — {selectedTx.trangThai} — Sách: {selectedTx.tenSach || selectedTx.maSach} ({selectedTx.soLuong} cuốn)
             </p>
             <p className="text-xs text-slate-600 mt-0.5">
-              Thời gian: {selectedTx.ngayGD?.replace('T', ' ')} — Người thao tác: @{selectedTx.username} ({selectedTx.tenTK || 'Nội bộ'})
+              Thời gian: {formatTxDate(selectedTx.ngayGD)} — Người thao tác: @{selectedTx.username} ({selectedTx.tenTK || 'Nội bộ'})
               {selectedTx.tenKH && ` — Bạn đọc: ${selectedTx.tenKH} (${selectedTx.maKH})`}
             </p>
           </div>
@@ -1233,7 +1270,7 @@ const TabLichSuGiaoDich = ({ showToast }) => {
                     <td className="py-3 px-3 text-slate-800 font-medium">{tx.username}</td>
                     <td className="py-3 px-3 text-slate-700">{tx.tenKH || '—'}</td>
                     <td className="py-3 px-3 text-slate-900 font-medium">{tx.tenSach || tx.maSach}</td>
-                    <td className="py-3 px-3 text-slate-600">{tx.ngayGD?.slice(0, 16).replace('T', ' ')}</td>
+                    <td className="py-3 px-3 text-slate-600 font-mono">{formatTxDate(tx.ngayGD)}</td>
                     <td className="py-3 px-3 text-center font-bold text-slate-900">{tx.soLuong}</td>
                     <td className="py-3 px-3 text-center">
                       <span

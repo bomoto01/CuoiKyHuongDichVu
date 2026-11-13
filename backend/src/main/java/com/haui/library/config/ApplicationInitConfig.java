@@ -27,8 +27,7 @@ public class ApplicationInitConfig {
             SachRepository sachRepository,
             KhachHangRepository khachHangRepository,
             PhieuMuonRepository phieuMuonRepository,
-            LichSuGiaoDichRepository lichSuGiaoDichRepository
-    ) {
+            LichSuGiaoDichRepository lichSuGiaoDichRepository) {
         return args -> {
             log.info("Starting initial database seeding for HaUI Library Management System...");
 
@@ -91,11 +90,16 @@ public class ApplicationInitConfig {
                 TheLoai tl3 = theLoaiRepository.findById("TL003").orElse(null);
                 TheLoai tl4 = theLoaiRepository.findById("TL004").orElse(null);
 
-                Sach s1 = Sach.builder().maSach("S001").tenSach("Toán lớp 10").tacGia("Huỳnh Nhật Minh").soLuong(9).theLoai(tl1).build();
-                Sach s2 = Sach.builder().maSach("S002").tenSach("Vì sao lại thế").tacGia("Hoàng Mai").soLuong(5).theLoai(tl3).build();
-                Sach s3 = Sach.builder().maSach("S003").tenSach("Sao tháng tám").tacGia("Nguyễn Nhật Ánh").soLuong(10).theLoai(tl2).build();
-                Sach s4 = Sach.builder().maSach("S004").tenSach("Văn lớp 3").tacGia("Như Hoàn").soLuong(20).theLoai(tl2).build();
-                Sach s5 = Sach.builder().maSach("S005").tenSach("Lập trình Web Spring Boot & React").tacGia("Trần Thanh Hùng").soLuong(15).theLoai(tl4).build();
+                Sach s1 = Sach.builder().maSach("S001").tenSach("Toán lớp 10").tacGia("Huỳnh Nhật Minh").soLuong(9)
+                        .theLoai(tl1).build();
+                Sach s2 = Sach.builder().maSach("S002").tenSach("Vì sao lại thế").tacGia("Hoàng Mai").soLuong(5)
+                        .theLoai(tl3).build();
+                Sach s3 = Sach.builder().maSach("S003").tenSach("Sao tháng tám").tacGia("Nguyễn Nhật Ánh").soLuong(10)
+                        .theLoai(tl2).build();
+                Sach s4 = Sach.builder().maSach("S004").tenSach("Văn lớp 3").tacGia("Như Hoàn").soLuong(20).theLoai(tl2)
+                        .build();
+                Sach s5 = Sach.builder().maSach("S005").tenSach("Lập trình Web Spring Boot & React")
+                        .tacGia("Trần Thanh Hùng").soLuong(15).theLoai(tl4).build();
 
                 sachRepository.save(s1);
                 sachRepository.save(s2);
@@ -107,72 +111,56 @@ public class ApplicationInitConfig {
             // 4. Seed Customers
             if (khachHangRepository.count() == 0) {
                 KhachHang kh1 = KhachHang.builder().maKH("KH125583").tenKH("Nguyen Van B").sdtKH("0987654321").build();
-                KhachHang kh2 = KhachHang.builder().maKH("KH252642").tenKH("Huỳnh Nhật Minh").sdtKH("0123456789").build();
-                KhachHang kh3 = KhachHang.builder().maKH("KH831056").tenKH("Nguyễn Như Hoàn").sdtKH("0347162755").build();
+                KhachHang kh2 = KhachHang.builder().maKH("KH252642").tenKH("Huỳnh Nhật Minh").sdtKH("0123456789")
+                        .build();
+                KhachHang kh3 = KhachHang.builder().maKH("KH831056").tenKH("Nguyễn Như Hoàn").sdtKH("0347162755")
+                        .build();
 
                 khachHangRepository.save(kh1);
                 khachHangRepository.save(kh2);
                 khachHangRepository.save(kh3);
             }
 
-            // 5. Seed Sample Borrow slips & Transaction History
-            if (phieuMuonRepository.count() == 0) {
-                KhachHang kh2 = khachHangRepository.findById("KH252642").orElse(null);
-                KhachHang kh1 = khachHangRepository.findById("KH125583").orElse(null);
-                Sach s1 = sachRepository.findById("S001").orElse(null);
-                Sach s3 = sachRepository.findById("S003").orElse(null);
-                TaiKhoan manager = taiKhoanRepository.findById("phamquoctoan").orElse(null);
+            // 5. Clean up sample borrow slips & transactions for Phạm Quốc Toản & Bùi Minh Tâm
+            try {
+                List<String> targetIds = List.of("KH125583", "KH252642");
+                List<String> targetNames = List.of("Bùi Minh Tâm", "Phạm Quốc Toản", "Nguyen Van B", "Huỳnh Nhật Minh");
 
-                if (kh2 != null && s1 != null) {
-                    PhieuMuon pm1 = PhieuMuon.builder()
-                            .maMuon("PM001")
-                            .khachHang(kh2)
-                            .sach(s1)
-                            .soLuong(2)
-                            .ngayMuon(LocalDateTime.now().minusDays(3))
-                            .ngayTra(LocalDateTime.now().plusDays(11))
-                            .build();
-                    phieuMuonRepository.save(pm1);
+                List<PhieuMuon> sampleBorrows = phieuMuonRepository.findAll().stream()
+                        .filter(pm -> (pm.getKhachHang() != null && (
+                                targetIds.contains(pm.getKhachHang().getMaKH()) ||
+                                (pm.getKhachHang().getTenKH() != null && targetNames.stream().anyMatch(n -> pm.getKhachHang().getTenKH().equalsIgnoreCase(n)))
+                        )) || "PM001".equalsIgnoreCase(pm.getMaMuon()) || "PM002".equalsIgnoreCase(pm.getMaMuon()))
+                        .toList();
 
-                    LichSuGiaoDich lsgd1 = LichSuGiaoDich.builder()
-                            .maGD("GD100001")
-                            .ngayGD(LocalDateTime.now().minusDays(3))
-                            .soLuong(2)
-                            .trangThai(TransactionStatus.MUON.getDescription())
-                            .sach(s1)
-                            .khachHang(kh2)
-                            .taiKhoan(manager)
-                            .build();
-                    lichSuGiaoDichRepository.save(lsgd1);
+                if (!sampleBorrows.isEmpty()) {
+                    for (PhieuMuon pm : sampleBorrows) {
+                        Sach book = pm.getSach();
+                        if (book != null && pm.getSoLuong() != null) {
+                            book.setSoLuong(book.getSoLuong() + pm.getSoLuong());
+                            sachRepository.save(book);
+                        }
+                    }
+                    phieuMuonRepository.deleteAll(sampleBorrows);
+                    log.info("Da xoa {} phieu muon mau cua Pham Quoc Toan va Bui Minh Tam.", sampleBorrows.size());
                 }
 
-                if (kh1 != null && s3 != null) {
-                    // Overdue slip for testing "Quá hạn trả"
-                    PhieuMuon pm2 = PhieuMuon.builder()
-                            .maMuon("PM002")
-                            .khachHang(kh1)
-                            .sach(s3)
-                            .soLuong(1)
-                            .ngayMuon(LocalDateTime.now().minusDays(20))
-                            .ngayTra(LocalDateTime.now().minusDays(6))
-                            .build();
-                    phieuMuonRepository.save(pm2);
+                List<LichSuGiaoDich> sampleTx = lichSuGiaoDichRepository.findAll().stream()
+                        .filter(tx -> (tx.getKhachHang() != null && (
+                                targetIds.contains(tx.getKhachHang().getMaKH()) ||
+                                (tx.getKhachHang().getTenKH() != null && targetNames.stream().anyMatch(n -> tx.getKhachHang().getTenKH().equalsIgnoreCase(n)))
+                        )) || "GD100001".equalsIgnoreCase(tx.getMaGD()) || "GD100002".equalsIgnoreCase(tx.getMaGD()))
+                        .toList();
 
-                    LichSuGiaoDich lsgd2 = LichSuGiaoDich.builder()
-                            .maGD("GD100002")
-                            .ngayGD(LocalDateTime.now().minusDays(20))
-                            .soLuong(1)
-                            .trangThai(TransactionStatus.MUON.getDescription())
-                            .sach(s3)
-                            .khachHang(kh1)
-                            .taiKhoan(manager)
-                            .build();
-                    lichSuGiaoDichRepository.save(lsgd2);
+                if (!sampleTx.isEmpty()) {
+                    lichSuGiaoDichRepository.deleteAll(sampleTx);
+                    log.info("Da xoa {} ban ghi lich su giao dich mau.", sampleTx.size());
                 }
+            } catch (Exception ex) {
+                log.warn("Loi khi don dep du lieu mau: {}", ex.getMessage());
             }
 
             log.info("HaUI Library initial data seeding completed successfully.");
         };
     }
 }
-

@@ -12,6 +12,8 @@ spring:
     active: supabase
   jpa:
     open-in-view: true
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
 
 ---
 spring:

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +29,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SachServiceImpl implements SachService {
+
+    public static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final SachRepository sachRepository;
     private final TheLoaiRepository theLoaiRepository;
@@ -127,7 +130,7 @@ public class SachServiceImpl implements SachService {
         String maGD = "GD" + System.currentTimeMillis() % 1000000;
         LichSuGiaoDich lsgd = LichSuGiaoDich.builder()
                 .maGD(maGD)
-                .ngayGD(LocalDateTime.now())
+                .ngayGD(LocalDateTime.now(VIETNAM_ZONE))
                 .soLuong(soLuongXoa)
                 .trangThai(TransactionStatus.HUY_SACH.getDescription())
                 .sach(sach)

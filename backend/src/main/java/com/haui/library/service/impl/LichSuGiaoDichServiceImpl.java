@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LichSuGiaoDichServiceImpl implements LichSuGiaoDichService {
+
+    public static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final LichSuGiaoDichRepository lichSuGiaoDichRepository;
     private final LichSuGiaoDichMapper lichSuGiaoDichMapper;
@@ -40,7 +43,7 @@ public class LichSuGiaoDichServiceImpl implements LichSuGiaoDichService {
             ngayGDDau = LocalDateTime.of(2000, 1, 1, 0, 0);
         }
         if (ngayGDCuoi == null) {
-            ngayGDCuoi = LocalDateTime.now();
+            ngayGDCuoi = LocalDateTime.now(VIETNAM_ZONE);
         }
         // ensure start is before end
         if (ngayGDDau.isAfter(ngayGDCuoi)) {
@@ -59,7 +62,7 @@ public class LichSuGiaoDichServiceImpl implements LichSuGiaoDichService {
     @Override
     @Transactional
     public int deleteOlderThanThreeYears() {
-        LocalDateTime cutOff = LocalDateTime.now().minusYears(3);
+        LocalDateTime cutOff = LocalDateTime.now(VIETNAM_ZONE).minusYears(3);
         return lichSuGiaoDichRepository.deleteByNgayGDBefore(cutOff);
     }
 }

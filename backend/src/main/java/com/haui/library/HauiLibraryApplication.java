@@ -1,5 +1,6 @@
 package com.haui.library;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,9 +9,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.TimeZone;
 
 @SpringBootApplication
 public class HauiLibraryApplication {
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        System.out.println("[TIMEZONE] Da cau hinh mui gio he thong: " + TimeZone.getDefault().getID());
+    }
 
     public static void main(String[] args) {
         loadDotenv();

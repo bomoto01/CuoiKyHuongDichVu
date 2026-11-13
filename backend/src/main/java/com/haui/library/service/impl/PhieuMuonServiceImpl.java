@@ -18,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PhieuMuonServiceImpl implements PhieuMuonService {
+
+    public static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final PhieuMuonRepository phieuMuonRepository;
     private final KhachHangRepository khachHangRepository;
@@ -64,7 +67,7 @@ public class PhieuMuonServiceImpl implements PhieuMuonService {
 
     @Override
     public List<PhieuMuonResponse> getOverdue() {
-        return phieuMuonMapper.toResponseList(phieuMuonRepository.findByNgayTraBefore(LocalDateTime.now()));
+        return phieuMuonMapper.toResponseList(phieuMuonRepository.findByNgayTraBefore(LocalDateTime.now(VIETNAM_ZONE)));
     }
 
     @Override
@@ -84,7 +87,7 @@ public class PhieuMuonServiceImpl implements PhieuMuonService {
             throw new AppException(ErrorCode.BOOK_INSUFFICIENT_STOCK);
         }
 
-        LocalDateTime ngayMuon = request.getNgayMuon() != null ? request.getNgayMuon() : LocalDateTime.now();
+        LocalDateTime ngayMuon = request.getNgayMuon() != null ? request.getNgayMuon() : LocalDateTime.now(VIETNAM_ZONE);
         LocalDateTime ngayTra = request.getNgayTra() != null ? request.getNgayTra() : ngayMuon.plusDays(14);
 
         if (ngayTra.isBefore(ngayMuon)) {
@@ -115,7 +118,7 @@ public class PhieuMuonServiceImpl implements PhieuMuonService {
         String maGD = "GD" + System.currentTimeMillis() % 1000000;
         LichSuGiaoDich lsgd = LichSuGiaoDich.builder()
                 .maGD(maGD)
-                .ngayGD(LocalDateTime.now())
+                .ngayGD(LocalDateTime.now(VIETNAM_ZONE))
                 .soLuong(request.getSoLuong())
                 .trangThai(TransactionStatus.MUON.getDescription())
                 .sach(sach)
@@ -150,7 +153,7 @@ public class PhieuMuonServiceImpl implements PhieuMuonService {
         String maGD = "GD" + System.currentTimeMillis() % 1000000;
         LichSuGiaoDich lsgd = LichSuGiaoDich.builder()
                 .maGD(maGD)
-                .ngayGD(LocalDateTime.now())
+                .ngayGD(LocalDateTime.now(VIETNAM_ZONE))
                 .soLuong(request.getSoLuong())
                 .trangThai(TransactionStatus.TRA.getDescription())
                 .sach(sach)
@@ -189,7 +192,7 @@ public class PhieuMuonServiceImpl implements PhieuMuonService {
         String maGD = "GD" + System.currentTimeMillis() % 1000000;
         LichSuGiaoDich lsgd = LichSuGiaoDich.builder()
                 .maGD(maGD)
-                .ngayGD(LocalDateTime.now())
+                .ngayGD(LocalDateTime.now(VIETNAM_ZONE))
                 .soLuong(request.getSoLuongMat())
                 .trangThai(TransactionStatus.MAT.getDescription())
                 .sach(sach)
