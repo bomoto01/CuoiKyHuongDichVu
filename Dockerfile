@@ -5,7 +5,7 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /workspace
 
 # Configure Maven settings to prevent 429 Too Many Requests
-COPY backend/.mvn /root/.m2/
+COPY backend/.mvn/settings.xml /root/.m2/settings.xml
 
 # Copy parent POM and all microservices modules
 COPY backend/pom.xml ./pom.xml
@@ -16,8 +16,8 @@ COPY backend/customer-service ./customer-service
 COPY backend/borrow-service ./borrow-service
 COPY backend/gateway-service ./gateway-service
 
-# Build all microservices
-RUN mvn clean package -DskipTests
+# Build all microservices with custom settings mirror
+RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
 
 # ==========================================
 # 2. RUNTIME STAGE (Eclipse Temurin JRE 21)
