@@ -1,0 +1,52 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        # 1. Account Service (/api/TaiKhoan/**)
+        - id: account-service-route
+          uri: ${ACCOUNT_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/TaiKhoan/**
+
+        # 2. Book Service (/api/Sach/**, /api/TheLoai/**)
+        - id: book-service-sach-route
+          uri: ${BOOK_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/Sach/**
+        - id: book-service-theloai-route
+          uri: ${BOOK_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/TheLoai/**
+
+        # 3. Customer Service (/api/KhachHang/**)
+        - id: customer-service-route
+          uri: ${CUSTOMER_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/KhachHang/**
+
+        # 4. Borrow & Transaction Service (/api/Muon/**, /api/LiSuGiaoDich/**)
+        - id: borrow-service-muon-route
+          uri: ${BORROW_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/Muon/**, /api/PhieuMuon/**
+        - id: borrow-service-lsgd-route
+          uri: ${BORROW_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/LiSuGiaoDich/**, /api/LichSuGiaoDich/**

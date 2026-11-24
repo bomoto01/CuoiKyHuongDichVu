@@ -1,0 +1,55 @@
+server:
+  port: ${PORT:8084}
+
+spring:
+  application:
+    name: borrow-service
+  profiles:
+    active: supabase
+  jpa:
+    open-in-view: true
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+
+services:
+  book-service:
+    url: ${BOOK_SERVICE_URL:http://localhost:8082}
+  customer-service:
+    url: ${CUSTOMER_SERVICE_URL:http://localhost:8083}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:borrow_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MSSQLServer
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: supabase
+  datasource:
+    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true}
+    driver-class-name: org.postgresql.Driver
+    username: ${SUPABASE_DB_USERNAME:postgres.yphylldavdpxisddudbr}
+    password: ${SUPABASE_DB_PASSWORD:${DB_PASSWORD:}}
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false

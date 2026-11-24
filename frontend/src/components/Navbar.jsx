@@ -5,6 +5,15 @@ import { BookOpen, User, LogOut, ShieldCheck, Library } from 'lucide-react';
 export const Navbar = ({ currentTab, onSelectTab, tabs = [] }) => {
   const { user, logout, isAdmin } = useAuth();
 
+  const displayName = (() => {
+    if (!user) return 'Người dùng';
+    const raw = user?.tenTK || user?.username || '';
+    if (user?.username === 'admin' || raw.includes('Quản Trị Viên') || raw.toLowerCase() === 'admin') {
+      return 'Admin';
+    }
+    return raw;
+  })();
+
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,10 +37,10 @@ export const Navbar = ({ currentTab, onSelectTab, tabs = [] }) => {
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
               <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
-                {user?.tenTK ? user.tenTK.charAt(0).toUpperCase() : (user?.username ? user.username.charAt(0).toUpperCase() : 'U')}
+                {displayName.charAt(0).toUpperCase()}
               </div>
               <span className="font-bold text-slate-800 text-sm max-w-[200px] truncate">
-                {user?.tenTK || user?.username}
+                {displayName}
               </span>
             </div>
 

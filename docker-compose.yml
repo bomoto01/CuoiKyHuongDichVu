@@ -1,18 +1,87 @@
 services:
-  backend:
+  gateway-service:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: haui-library-backend
+      dockerfile: backend/gateway-service/Dockerfile
+    container_name: haui-library-gateway
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
+      - ACCOUNT_SERVICE_URL=http://account-service:8081
+      - BOOK_SERVICE_URL=http://book-service:8082
+      - CUSTOMER_SERVICE_URL=http://customer-service:8083
+      - BORROW_SERVICE_URL=http://borrow-service:8084
+    depends_on:
+      - account-service
+      - book-service
+      - customer-service
+      - borrow-service
+    restart: unless-stopped
+
+  account-service:
+    build:
+      context: .
+      dockerfile: backend/account-service/Dockerfile
+    container_name: haui-library-account
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
       - SPRING_PROFILES_ACTIVE=supabase
       - SUPABASE_DB_URL=jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
       - SUPABASE_DB_USERNAME=postgres.yphylldavdpxisddudbr
       - SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD:-monnayphaiduocA}
-      - DB_PASSWORD=${DB_PASSWORD:-monnayphaiduocA}
+    restart: unless-stopped
+
+  book-service:
+    build:
+      context: .
+      dockerfile: backend/book-service/Dockerfile
+    container_name: haui-library-book
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - SPRING_PROFILES_ACTIVE=supabase
+      - SUPABASE_DB_URL=jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
+      - SUPABASE_DB_USERNAME=postgres.yphylldavdpxisddudbr
+      - SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD:-monnayphaiduocA}
+    restart: unless-stopped
+
+  customer-service:
+    build:
+      context: .
+      dockerfile: backend/customer-service/Dockerfile
+    container_name: haui-library-customer
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+      - SPRING_PROFILES_ACTIVE=supabase
+      - SUPABASE_DB_URL=jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
+      - SUPABASE_DB_USERNAME=postgres.yphylldavdpxisddudbr
+      - SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD:-monnayphaiduocA}
+    restart: unless-stopped
+
+  borrow-service:
+    build:
+      context: .
+      dockerfile: backend/borrow-service/Dockerfile
+    container_name: haui-library-borrow
+    ports:
+      - "8084:8084"
+    environment:
+      - PORT=8084
+      - SPRING_PROFILES_ACTIVE=supabase
+      - SUPABASE_DB_URL=jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require&tcpKeepAlive=true
+      - SUPABASE_DB_USERNAME=postgres.yphylldavdpxisddudbr
+      - SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD:-monnayphaiduocA}
+      - BOOK_SERVICE_URL=http://book-service:8082
+      - CUSTOMER_SERVICE_URL=http://customer-service:8083
+    depends_on:
+      - book-service
+      - customer-service
     restart: unless-stopped
 
   frontend:
@@ -23,5 +92,5 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      - gateway-service
     restart: unless-stopped
