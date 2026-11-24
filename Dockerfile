@@ -7,16 +7,11 @@ WORKDIR /workspace
 # Configure Maven settings to prevent 429 Too Many Requests
 COPY backend/.mvn/settings.xml /root/.m2/settings.xml
 
-# Copy parent POM and all microservices modules
-COPY backend/pom.xml ./pom.xml
-COPY backend/common-library ./common-library
-COPY backend/account-service ./account-service
-COPY backend/book-service ./book-service
-COPY backend/customer-service ./customer-service
-COPY backend/borrow-service ./borrow-service
-COPY backend/gateway-service ./gateway-service
+# Copy Render single-JVM POM and source code (fits 512MB Free Tier RAM)
+COPY backend/pom-render.xml ./pom.xml
+COPY backend/src ./src
 
-# Build all microservices with custom settings mirror
+# Build single executable JAR
 RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
 
 # ==========================================
@@ -25,21 +20,12 @@ RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copy all 5 service JARs from builder
-COPY --from=builder /workspace/account-service/target/account-service-1.0.0.jar account.jar
-COPY --from=builder /workspace/book-service/target/book-service-1.0.0.jar book.jar
-COPY --from=builder /workspace/customer-service/target/customer-service-1.0.0.jar customer.jar
-COPY --from=builder /workspace/borrow-service/target/borrow-service-1.0.0.jar borrow.jar
-COPY --from=builder /workspace/gateway-service/target/gateway-service-1.0.0.jar gateway.jar
+COPY --from=builder /workspace/target/library-management-1.0.0.jar app.jar
 
-# Entrypoint script
-COPY entrypoint.sh ./entrypoint.sh
-RUN sed -i 's/\r$//' ./entrypoint.sh && chmod +x ./entrypoint.sh
-
-# Configuration for Render / Cloud environments
 ENV PORT=8080
 ENV SPRING_PROFILES_ACTIVE=supabase
 
 EXPOSE 8080
 
-ENTRYPOINT ["./entrypoint.sh"]
+# Tune JVM memory strictly within Render 512MB Free Tier limit
+ENTRYPOINT ["sh", "-c", "java -Xms64m -Xmx320m -XX:+UseSerialGC -Dserver.port=${PORT} -Dfile.encoding=UTF-8 -jar app.jar"]
